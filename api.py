@@ -74,7 +74,7 @@ class UserContainers(Resource):
             return {'success': True, 'data': {}}
         timeout = int(get_config("whale:docker_timeout", "3600"))
         if int(container.challenge_id) != int(challenge_id):
-            return abort(403, f'Container started but not from this challenge ({container.challenge.name})', success=False)
+            return abort(403, f'Container started on challenge ({container.challenge.name}) <br /> If you create a new container, the old container will be closed.', success=False)
         return {
             'success': True,
             'data': {
@@ -117,7 +117,7 @@ class UserContainers(Resource):
         if container is None:
             abort(403, 'Instance not found.', success=False)
         if int(container.challenge_id) != int(challenge_id):
-            abort(403, f'Container started but not from this challenge（{container.challenge.name}）', success=False)
+            abort(403, f'Container started on challenge ({container.challenge.name}) <br /> If you create a new container, the old container will be closed.', success=False)
         if container.renew_count >= docker_max_renew_count:
             abort(403, 'Max renewal count exceed.', success=False)
         result, message = ControlUtil.try_renew_container(user_id=user_id)

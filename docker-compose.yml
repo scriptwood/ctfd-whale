@@ -126,7 +126,6 @@ networks:
         driver: overlay
         internal: true
         # if challenge containers are allowed to access the internet, remove this line
-        attachable: true
         ipam:
             config:
                 - subnet: 172.2.0.0/16            

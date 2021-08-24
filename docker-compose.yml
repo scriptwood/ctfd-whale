@@ -73,9 +73,9 @@ services:
     volumes:
         - ./conf/frp:/conf
     entrypoint:
-        - /usr/local/bin/frps
+        - /root/CTFd/conf/frp
         - -c
-        - /conf/frps.ini
+        - /conf/frp/frps.ini
     ports:
         - 10000-10100:10000-10100  # for "direct" challenges
         - 8001:8001  # for "http" challenges

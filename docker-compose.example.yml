@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 
 services:
   ctfd:
@@ -87,11 +87,18 @@ services:
       "--subdomain_host=domain.io",
       "--vhost_http_port=8080",
     ]
+    volumes:
+        - ./conf/frp:/conf
+    entrypoint:
+        - /usr/local/bin/frps
+        - -c
+        - /conf/frps.ini
     ports:
-      - 8080:8080
+        - 10000-10100:10000-10100  # for "direct" challenges
+        - 8001:8001  # for "http" challenges
     networks:
-      frp:
-      default:
+        default:  # frps ports should be mapped to host
+        frp_connect:
 
 networks:
     default:
@@ -101,3 +108,11 @@ networks:
         internal: true
     containers:
         internal: true
+    frp_connect:
+        driver: overlay
+        internal: true
+        ipam:
+            config:
+                - subnet: 172.1.0.0/16
+
+

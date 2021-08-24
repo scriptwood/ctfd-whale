@@ -60,23 +60,6 @@ services:
     networks:
         internal:
 
-  frpc:
-    image: frankli0324/frp:frpc
-    restart: always
-    command: [
-      "--server_addr=frps",
-      "--server_port=7000",
-      "--token=your_token",
-      "--admin_addr=0.0.0.0",
-      "--admin_port=7000",
-      "--admin_user=frank",
-      "--admin_pwd=qwer",
-    ]
-    networks:
-      frp:
-      internal:
-      containers:
-
   frps:
     image: frankli0324/frp:frps
     restart: always
@@ -100,6 +83,31 @@ services:
         default:  # frps ports should be mapped to host
         frp_connect:
 
+  frpc:
+    image: frankli0324/frp:frpc
+    restart: always
+    command: [
+      "--server_addr=frps",
+      "--server_port=7000",
+      "--token=your_token",
+      "--admin_addr=0.0.0.0",
+      "--admin_port=7000",
+      "--admin_user=frank",
+      "--admin_pwd=qwer",
+    ]
+    volumes:
+      - ./conf/frp:/conf/
+    entrypoint:
+      - /usr/local/bin/frpc
+      - -c
+      - /conf/frpc.ini
+    depends_on:
+      - frps #need frps to run first
+    networks:
+        frp_containers:
+        frp_connect:
+            ipv4_address: 172.1.0.3
+
 networks:
     default:
     internal:
@@ -114,5 +122,11 @@ networks:
         ipam:
             config:
                 - subnet: 172.1.0.0/16
-
-
+    frp_containers:  # challenge containers are attached to this network
+        driver: overlay
+        internal: true
+        # if challenge containers are allowed to access the internet, remove this line
+        attachable: true
+        ipam:
+            config:
+                - subnet: 172.2.0.0/16            

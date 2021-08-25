@@ -33,7 +33,8 @@ services:
     volumes:
       - ./conf/nginx/http.conf:/etc/nginx/nginx.conf
     ports:
-      - 80:80
+      - "80:80"
+      - "443:443"
     depends_on:
       - ctfd
 
@@ -61,13 +62,13 @@ services:
         internal:
 
   frps:
-    image: frankli0324/frp:latest
+    image: frankli0324/frp:frps
     restart: always
     command: [
       "--bind_addr=0.0.0.0",
       "--bind_port=7000",
       "--token=your_token",
-      "--subdomain_host=domain.io",
+      "--subdomain_host=127.0.0.1.xip.io",
       "--vhost_http_port=8080",
     ]
     volumes:
@@ -84,7 +85,7 @@ services:
         frp_connect:
 
   frpc:
-    image: frankli0324/frp:latest
+    image: frankli0324/frp:frpc
     restart: always
     command: [
       "--server_addr=frps",
@@ -125,7 +126,8 @@ networks:
     frp_containers:  # challenge containers are attached to this network
         driver: overlay
         internal: true
-        # if challenge containers are allowed to access the internet, remove this line
+        # if challenge containers are allowed to access the internet, remove this line          
+        attachable: true
         ipam:
-            config:
-                - subnet: 172.2.0.0/16            
+            config: 
+                - subnet: 172.2.0.0/16
